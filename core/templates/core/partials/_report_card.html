@@ -1,0 +1,25 @@
+<!-- templates/core/partials/_report_card.html -->
+<div class="card mb-3">
+  <div class="card-body">
+    <h5 class="card-title">{{ report.title }}</h5>
+    <p class="card-text">{{ report.description|truncatechars:150 }}</p>
+    <p class="mb-1"><strong>Category:</strong> {{ report.category }}</p>
+    <p class="mb-1"><strong>Status:</strong>
+      <span class="badge bg-{{ report.status|lower }}">{{ report.status }}</span>
+    </p>
+    <p class="text-muted small">Submitted on {{ report.created_at|date:"M d, Y" }}</p>
+    {% if report.image %}
+      <img src="{{ report.image.url }}" class="img-fluid rounded" style="max-height: 200px;">
+    {% endif %}
+    <div class="mt-2">
+      {% if report.status == "Pending" %}
+        <a href="{% url 'edit_report' report.id %}" class="btn btn-sm btn-warning">Edit</a>
+        <a href="{% url 'delete_report' report.id %}" class="btn btn-sm btn-danger">Delete</a>
+      {% endif %}
+    </div>
+    {% if report.admin_feedback %}
+  <p class="mt-2 text-danger"><strong>Admin Feedback:</strong> {{ report.admin_feedback }}</p>
+{% endif %}
+
+  </div>
+</div>

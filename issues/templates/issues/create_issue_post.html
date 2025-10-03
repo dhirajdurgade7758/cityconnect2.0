@@ -1,0 +1,442 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Report a Civic Issue{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #0A6A77, #BFE3E6);
+        min-height: 100vh;
+    }
+
+    html, body {
+        height: 100%;
+    }
+
+    .main-container {
+        padding: 2rem 2rem; /* Increased padding for overall professional look */
+        max-width: 1600px; /* Increased max-width for better full-screen view */
+        margin: 0 auto;
+    }
+
+    .cards-row {
+        display: flex;
+        gap: 2rem;
+        align-items: stretch;
+        justify-content: center; /* Center the cards for larger screens */
+    }
+
+    .report-card,
+    .eco-info-card {
+        background: rgba(255, 255, 255, 0.97);
+        border-radius: 20px;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        padding: 2rem;
+        width: 100%;
+        box-sizing: border-box;
+        backdrop-filter: blur(10px);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .report-card:hover,
+    .eco-info-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .report-card {
+        background: rgba(255, 255, 255, 0.98);
+        flex: 2; /* Make the form card wider */
+        max-width: 700px; /* Adjusted max-width for a more balanced layout */
+    }
+
+    .eco-info-card {
+        border: 2px solid #0A6A77;
+        flex: 1; /* Make eco-info card a bit narrower */
+        max-width: 450px;
+    }
+
+    .form-container,
+    .eco-info-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-content {
+        flex: 1;
+        overflow-y: auto;
+        padding-right: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .eco-info-content {
+        flex: 1;
+        overflow-y: auto;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-content::-webkit-scrollbar,
+    .eco-info-content::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .form-content::-webkit-scrollbar-track,
+    .eco-info-content::-webkit-scrollbar-track {
+        background: #f8f9fa;
+        border-radius: 3px;
+    }
+
+    .form-content::-webkit-scrollbar-thumb,
+    .eco-info-content::-webkit-scrollbar-thumb {
+        background: #0A6A77;
+        border-radius: 3px;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #084F57;
+        margin-bottom: 0.75rem;
+        display: block;
+        font-size: 0.95rem;
+    }
+
+    input,
+    textarea,
+    select {
+        border-radius: 12px !important;
+        border: 2px solid #e9ecef !important;
+        padding: 1rem !important;
+        font-size: 0.95rem;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        max-width: 100% !important;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        background: #fafbfc;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+        border-color: #0A6A77 !important;
+        box-shadow: 0 0 0 3px rgba(10, 106, 119, 0.1) !important;
+        outline: none !important;
+        background: #fff;
+    }
+
+    textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #0A6A77, #084F57);
+        border: none;
+        border-radius: 12px;
+        font-weight: 500;
+        padding: 1rem 2rem;
+        transition: all 0.3s ease;
+        width: 100%;
+        font-size: 1rem;
+        box-shadow: 0 4px 15px rgba(10, 106, 119, 0.3);
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #084F57, #0A6A77);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(10, 106, 119, 0.4);
+    }
+
+    .eco-info-content ul {
+        padding-left: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .eco-info-content li {
+        margin-bottom: 0.75rem;
+        line-height: 1.5;
+        color: #2c3e50;
+    }
+
+    .form-group {
+        margin-bottom: 2rem;
+    }
+
+    .submit-section {
+        border-top: 2px solid #f1f3f4;
+        padding-top: 1.5rem;
+        margin-top: auto;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .page-header h4 {
+        color: #084F57;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 1.75rem;
+    }
+
+    .page-header p {
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+
+    .eco-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .eco-header h5 {
+        color: #084F57;
+        font-weight: 600;
+        font-size: 1.4rem;
+        margin-bottom: 0.75rem;
+    }
+
+    /* Mobile Responsive Design */
+    @media (max-width: 991px) {
+        .main-container {
+            padding: 1.5rem 1rem;
+        }
+        
+        .cards-row {
+            flex-direction: column;
+            gap: 2rem;
+            min-height: auto;
+            align-items: center;
+        }
+        
+        .report-card,
+        .eco-info-card {
+            flex: none;
+            padding: 1.5rem;
+            border-radius: 16px;
+            max-width: 100%;
+            margin: 0 1rem; /* Added margin to left and right for space */
+        }
+        
+        .eco-info-card {
+            flex: none;
+            margin-top: 0;
+        }
+        
+        .form-content {
+            overflow-y: visible;
+            margin-bottom: 1rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .main-container {
+            padding: 1rem 0.5rem;
+        }
+        
+        .cards-row {
+            gap: 1.5rem;
+        }
+        
+        .report-card,
+        .eco-info-card {
+            padding: 1.25rem;
+            border-radius: 14px;
+            margin: 0 0.5rem; /* Added margin to left and right for space */
+        }
+        
+        .page-header h4 {
+            font-size: 1.5rem;
+        }
+        
+        .page-header p {
+            font-size: 1rem;
+        }
+        
+        .eco-header h5 {
+            font-size: 1.25rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .main-container {
+            padding: 0.75rem 0.25rem;
+        }
+        
+        .cards-row {
+            gap: 1rem;
+        }
+        
+        .report-card,
+        .eco-info-card {
+            padding: 1rem;
+            margin: 0 0.25rem; /* Added margin to left and right for space */
+            border-radius: 12px;
+        }
+        
+        input,
+        textarea,
+        select {
+            padding: 0.75rem !important;
+            font-size: 0.9rem;
+            border-radius: 10px !important;
+        }
+        
+        .btn-primary {
+            padding: 0.875rem 1.5rem;
+            font-size: 0.95rem;
+            border-radius: 10px;
+        }
+        
+        .page-header h4 {
+            font-size: 1.35rem;
+        }
+        
+        .eco-header h5 {
+            font-size: 1.15rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+    }
+
+    /* Ensure no horizontal overflow */
+    * {
+        box-sizing: border-box;
+    }
+    
+    .container-fluid {
+        padding-left: 0;
+        padding-right: 0;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+    
+    .row {
+        margin-left: 0;
+        margin-right: 0;
+        max-width: 100%;
+    }
+
+    /* Enhanced visual elements */
+    .text-danger {
+        color: #dc3545 !important;
+    }
+
+    .text-muted {
+        color: #6c757d !important;
+    }
+
+    /* Improved focus states for accessibility */
+    input:focus,
+    textarea:focus,
+    select:focus,
+    .btn-primary:focus {
+        outline: 2px solid #0A6A77;
+        outline-offset: 2px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid main-container">
+    <div class="cards-row">
+        <div class="report-card">
+            <header class="page-header">
+                <h4>📢 Report a Civic Issue</h4>
+                <p class="text-muted">Help improve your city by reporting problems.</p>
+            </header>
+
+            <form method="POST" enctype="multipart/form-data" class="form-container">
+                {% csrf_token %}
+
+                <div class="form-content">
+                    <div class="form-group">
+                        <label class="form-label">Issue Title <span class="text-danger">*</span></label>
+                        {{ form.title }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Description <span class="text-danger">*</span></label>
+                        {{ form.description }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Relevant Department <span class="text-danger">*</span></label>
+                        {{ form.department }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Upload Image</label>
+                        {{ form.image }}
+                    </div>
+                    
+                    {{ form.reported_latitude }}
+                    {{ form.reported_longitude }}
+                </div>
+
+                <div class="submit-section">
+                    <button type="submit" class="btn btn-primary">
+                        Submit Issue
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="eco-info-card">
+            <div class="eco-info-container">
+                <div class="eco-header">
+                    <h5>💰 Earn EcoCoins by Reporting Issues!</h5>
+                    <p>Your civic contributions are rewarded! Here's how:</p>
+                </div>
+                
+                <div class="eco-info-content">
+                    <ul>
+                        <li><strong>Likes:</strong> Earn <strong>1 EcoCoin</strong> per like on your issue.</li>
+                        <li><strong>Comments:</strong> Earn <strong>2 EcoCoins</strong> per comment.</li>
+                        <li><strong>Resolution Bonus:</strong> Extra reward when your issue is marked as resolved.</li>
+                        <li><strong>Shares:</strong> Earn 3 EcoCoins each time your issue is shared.</li>
+                        <li><strong>First Response Bonus:</strong> Earn 5 EcoCoins when you post the first comment on a new issue.</li>
+                        <li><strong>Daily Activity Bonus:</strong> Earn 10 EcoCoins for participating every day.</li>
+                        <li><strong>Helpful Feedback:</strong> Earn 4 EcoCoins when your comment is marked as helpful by others.</li>
+                        <li><strong>Milestone Achievement:</strong> Earn 20 EcoCoins when your issue reaches 100 likes.</li>
+                        <li><strong>Community Support:</strong> Earn 8 EcoCoins when you help resolve other users' issues.</li>
+                    </ul>
+                    
+                    <p><em>The more impactful and engaging your issue posts are, the more EcoCoins you can earn!</em></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            function (position) {
+                document.getElementById("id_reported_latitude").value = position.coords.latitude;
+                document.getElementById("id_reported_longitude").value = position.coords.longitude;
+                console.log("Geolocation coordinates set:", position.coords.latitude, position.coords.longitude);
+            },
+            function (error) {
+                console.warn("Geolocation error:", error.message);
+                alert("Unable to retrieve your location. Please enter it manually.");
+            }
+        );
+    } else {
+        console.warn("Geolocation is not supported by this browser.");
+    }
+});
+</script>
+{% endblock %}

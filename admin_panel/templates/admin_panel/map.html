@@ -1,0 +1,78 @@
+{% extends "admin_panel/base.html" %}
+{% load static %}
+{% block content %}
+
+
+<script>
+    let map;
+
+    function initMap() {
+        var locations = {{ locations|safe }};
+        var firstLocation = locations[0];
+        var infoWindow = [];
+
+        // ✅ Initialise map
+        map = new google.maps.Map(document.getElementById("map"), {
+            center: { lat: firstLocation.lat, lng: firstLocation.lng },
+            zoom: 12,
+            mapId: "166a24379880273b1db32e96"  
+        });
+
+        // ✅ Add custom markers with InfoWindows
+        locations.forEach(function (location) {
+            const marker = new google.maps.marker.AdvancedMarkerElement({
+                position: { lat: location.lat, lng: location.lng },
+                map: map,
+                title: location.name,
+                // ✅ Custom marker icon (change PNG as you want)
+                content: document.createElement("div")
+            });
+
+            // Custom marker design
+            marker.content.innerHTML = `
+                <div class="custom-marker"></div>
+            `;
+
+            var infowindow = new google.maps.InfoWindow({
+                content: `
+                    <div class="info-window">
+                        <h3>${location.name}</h3>
+                        <img src="${location.image}" alt="${location.name}" class="info-img"/>
+                        <p>${location.description}</p>
+                    </div>
+                `,
+            });
+
+            infoWindow.push(infowindow);
+
+            marker.addListener("click", function () {
+                infoWindow.forEach(function (iw) {
+                    iw.close();
+                });
+                infowindow.open(map, marker);
+            });
+        });
+    }
+
+    window.initMap = initMap;
+</script>
+
+<div class="pageholder">
+    <div class="titleholder">
+        <div class="title"> 🏙️ Reported Issues in City </div>
+    </div>
+
+    <div class="mapholder">
+        <div id="map"></div>
+    </div>
+
+    <div class="linkholder">
+        <a href="/"> ⬅ Go back to homepage</a>
+    </div>
+</div>
+
+<script async
+    src="https://maps.googleapis.com/maps/api/js?key={{key}}&callback=initMap&loading=async&v=weekly&libraries=marker">
+</script>
+
+{% endblock %}

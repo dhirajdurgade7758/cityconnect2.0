@@ -1,0 +1,11 @@
+<!-- templates/core/partials/_redemption_card.html -->
+<div class="card mb-3">
+  <div class="card-body">
+    <h6 class="card-title">{{ redemption.item_name }}</h6>
+    <p><strong>Coins Spent:</strong> {{ redemption.coins_spent }}</p>
+    <p><strong>Status:</strong>
+      <span class="badge bg-secondary">{{ redemption.status }}</span>
+    </p>
+    <p class="text-muted small">Requested on {{ redemption.requested_at|date:"M d, Y H:i" }}</p>
+  </div>
+</div>

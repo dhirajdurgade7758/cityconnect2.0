@@ -1,0 +1,181 @@
+
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Register{% endblock %}
+
+{% block extra_css %}
+<style>
+html, body {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;  /* Hides scrollbars */
+    background: linear-gradient(135deg, #0A6A77, #BFE3E6);
+    font-family: 'Poppins', sans-serif;
+}
+.register-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Card */
+.register-card {
+    background: #fff;
+    padding: 3rem 2rem;  /* top & bottom padding */
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    max-width: 460px;
+    width: 100%;
+    border-bottom: 6px solid #0A6A77;
+    animation: fadeIn 0.6s ease-in-out;
+    margin-bottom: 4rem; /* adds space below the card */
+}
+
+
+
+.register-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #0A6A77, #BFE3E6);
+    position: relative;
+    overflow: hidden;
+}
+.register-page::before,
+.register-page::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    animation: float 8s ease-in-out infinite;
+    z-index: 0;
+}
+.register-page::before { width: 300px; height: 300px; top: -100px; left: -100px; }
+.register-page::after { width: 200px; height: 200px; bottom: -60px; right: -60px; }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(15px)} }
+.register-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.97);
+    border-radius: 16px;
+    box-shadow: 0 6px 30px rgba(0,0,0,0.15);
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 500px;
+    animation: fadeIn 0.7s ease;
+    z-index: 1;
+}
+.register-card h3 {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+    color: #0A6A77;
+    text-align: center;
+}
+.register-card p {
+    text-align: center;
+    color: #555;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+}
+.register-btn {
+    background-color: #0A6A77;
+    border: none;
+    font-weight: bold;
+    padding: 0.75rem;
+    transition: background-color 0.3s ease;
+}
+.register-btn:hover { background-color: #084F57; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(25px)} to{opacity:1;transform:translateY(0)} }
+.register-card input, .register-card select {
+    border-radius: 8px;
+    padding: 0.6rem;
+    border: 1px solid #BFE3E6;
+}
+.register-card input:focus, .register-card select:focus {
+    outline: none;
+    border-color: #0A6A77;
+    box-shadow: 0 0 5px rgba(10,106,119,0.4);
+}
+/* Wrap label and input for better alignment */
+.form-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  width: 140px; /* wider so inputs start aligned */
+  font-weight: 600;
+  color: #333;
+  padding-right: 0.75rem;
+  white-space: nowrap; /* prevent label text wrap */
+}
+
+.form-group input,
+.form-group select {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #BFE3E6;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #0A6A77;
+  box-shadow: 0 0 8px rgba(10, 106, 119, 0.4);
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="register-page">
+    <div class="register-card">
+        <h3>Create an Account</h3>
+        <p>Join CityConnect to help improve your city 🏙</p>
+        <form method="POST" class="mt-3">
+    {% csrf_token %}
+
+    <div class="form-group">
+        <label for="{{ form.username.id_for_label }}">Username</label>
+        {{ form.username }}
+    </div>
+
+    <div class="form-group">
+        <label for="{{ form.email.id_for_label }}">Email address</label>
+        {{ form.email }}
+    </div>
+
+    <div class="form-group">
+        <label for="{{ form.password1.id_for_label }}">Password</label>
+        {{ form.password1 }}
+    </div>
+
+    <div class="form-group">
+        <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+        {{ form.password2 }}
+    </div>
+
+    <div class="form-group">
+        <label for="{{ form.area.id_for_label }}">Area</label>
+        {{ form.area }}
+    </div>
+
+    <button type="submit" class="btn register-btn w-100 mt-3">Register</button>
+</form>
+
+
+        <div class="text-center mt-3">
+            <small>Already have an account? <a href="{% url 'login' %}">Login here</a></small>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'core/base.html' %}
+{% block title %}Post Detail{% endblock %}
+{% block content %}
+
+<div class="card mb-4">
+  <div class="card-body">
+    <h4 class="card-title">{{ post.title }}</h4>
+    <p class="card-text">{{ post.description }}</p>
+    {% if post.image %}
+      <img src="{{ post.image.url }}" class="img-fluid rounded mb-2">
+    {% endif %}
+    <p class="text-muted">
+      🧑 {{ post.user.username }} | 📍 {{ post.location_name }} | 🕒 {{ post.created_at|timesince }} ago
+    </p>
+    <p>❤️ {{ post.likes.count }} Likes | 💬 {{ post.comments.count }} Comments</p>
+  </div>
+</div>
+
+<h5 class="mb-3">💬 Comments</h5>
+
+{% for comment in comments %}
+  <div class="border p-2 mb-2 rounded bg-light">
+    <strong>{{ comment.user.username }}</strong>
+    <p class="mb-1">{{ comment.text }}</p>
+    <small class="text-muted">{{ comment.timestamp|timesince }} ago</small>
+  </div>
+{% empty %}
+  <p>No comments yet.</p>
+{% endfor %}
+
+<hr>
+
+<h5>Add a Comment</h5>
+<form method="POST">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-primary">Post Comment</button>
+</form>
+
+{% endblock %}

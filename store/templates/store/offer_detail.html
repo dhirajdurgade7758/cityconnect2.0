@@ -1,0 +1,148 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ offer.name }} - EcoCoin Store{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                {% if offer.image %}
+                    <img src="{{ offer.image.url }}" class="card-img-top" style="height: 300px; object-fit: cover;" alt="{{ offer.name }}">
+                {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                        <i class="fas fa-image fa-4x text-muted"></i>
+                    </div>
+                {% endif %}
+                
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h2>{{ offer.name }}</h2>
+                        {% if offer.offer_type == 'shop_offer' %}
+                            <span class="badge bg-primary fs-6">Shop Offer</span>
+                        {% elif offer.offer_type == 'donor_gift' %}
+                            <span class="badge bg-success fs-6">Donor Gift</span>
+                        {% elif offer.offer_type == 'event_ticket' %}
+                            <span class="badge bg-info fs-6">Event Ticket</span>
+                        {% else %}
+                            <span class="badge bg-warning fs-6">Eco Reward</span>
+                        {% endif %}
+                    </div>
+                    
+                    <p class="lead">{{ offer.description }}</p>
+                    
+                    <div class="row g-3 mb-4">
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-coins text-warning me-2"></i>
+                                <strong>{{ offer.coins_required }} EcoCoins</strong>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-box text-info me-2"></i>
+                                <span>{{ offer.stock }} items left</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                <span>{{ offer.location_name }}</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-calendar text-success me-2"></i>
+                                <span>Valid until {{ offer.end_date }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if offer.location_map_url %}
+                        <div class="mb-3">
+                            <a href="{{ offer.location_map_url }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-map"></i> View on Map
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+             User Coins 
+            <div class="card mb-3">
+                <div class="card-body text-center">
+                    <h5><i class="fas fa-coins text-warning"></i> Your EcoCoins</h5>
+                    <h3 class="text-success">{{ user_coins }}</h3>
+                </div>
+            </div>
+            
+             Redemption Card 
+            <div class="card">
+                <div class="card-body">
+                    <h5>Redeem This Offer</h5>
+                    
+                    {% if offer.is_active %}
+                        {% if can_afford %}
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle"></i>
+                                You can afford this offer!
+                            </div>
+                            
+                            <form method="post" action="{% url 'redeem_offer' offer.id %}">
+                                {% csrf_token %}
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-success btn-lg" 
+                                            onclick="return confirm('Are you sure you want to redeem {{ offer.name }} for {{ offer.coins_required }} coins?')">
+                                        <i class="fas fa-shopping-cart"></i> Redeem for {{ offer.coins_required }} coins
+                                    </button>
+                                </div>
+                            </form>
+                            
+                            <small class="text-muted mt-2 d-block">
+                                After redemption, you'll have {{ user_coins|add:offer.coins_required|add:"-"|add:offer.coins_required }} coins left.
+                            </small>
+                        {% else %}
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                You need {{ offer.coins_required|add:user_coins|add:"-"|add:user_coins }} more coins.
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button class="btn btn-secondary btn-lg" disabled>
+                                    <i class="fas fa-coins"></i> Not Enough Coins
+                                </button>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <a href="{% url 'tasks' %}" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-tasks"></i> Earn More Coins
+                                </a>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="alert alert-danger">
+                            <i class="fas fa-times-circle"></i>
+                            This offer is no longer available.
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button class="btn btn-danger btn-lg" disabled>
+                                <i class="fas fa-times"></i> Unavailable
+                            </button>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="mt-3">
+                        <a href="{% url 'store_view' %}" class="btn btn-outline-secondary w-100">
+                            <i class="fas fa-arrow-left"></i> Back to Store
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

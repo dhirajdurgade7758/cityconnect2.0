@@ -1,0 +1,26 @@
+{% extends 'core/base.html' %}
+{% block title %}Voucher{% endblock %}
+{% block content %}
+
+<div class="card shadow-lg border-success" style="max-width: 600px; margin: auto;">
+    <div class="card-body">
+        <h3 class="text-success text-center mb-3">🎁 Redemption Voucher</h3>
+        <hr>
+        <h5><strong>Offer:</strong> {{ redemption.offer.name }}</h5>
+        <p><strong>Description:</strong> {{ redemption.offer.description }}</p>
+        <p><strong>Location:</strong> {{ redemption.offer.location_name }}</p>
+        <p><strong>Coins Spent:</strong> {{ redemption.coins_spent }}</p>
+        <p><strong>Redeemed On:</strong> {{ redemption.redeemed_at|date:"M d, Y H:i" }}</p>
+
+        {% if redemption.offer.location_map_url %}
+            <a href="{{ redemption.offer.location_map_url }}" target="_blank" class="btn btn-link">📍 View on Map</a>
+        {% endif %}
+
+        <div class="mt-4 text-center">
+            <a href="{% url 'download_voucher_pdf' redemption.id %}" class="btn btn-success">⬇ Download PDF</a>
+            <a href="{% url 'store_view' %}" class="btn btn-secondary">Back to Store</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

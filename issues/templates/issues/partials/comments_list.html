@@ -1,0 +1,23 @@
+{% for comment in comments %}
+<div class="comment" id="comment-{{ comment.id }}">
+    <div class="comment-avatar">
+        {% if comment.user.profile.avatar %}
+            <img src="{{ comment.user.profile.avatar.url }}" alt="{{ comment.user.username }}">
+        {% else %}
+            <div class="avatar-initial">{{ comment.user.username|first|upper }}</div>
+        {% endif %}
+    </div>
+    <div class="comment-content">
+        <div class="comment-header">
+            <span class="comment-user">{{ comment.user.username }}</span>
+            <span class="comment-time">{{ comment.timestamp|timesince }} ago</span>
+        </div>
+        <div class="comment-text">{{ comment.text }}</div>
+    </div>
+</div>
+{% empty %}
+<div class="no-comments">
+    <i class="bi bi-chat-square-text"></i>
+    <p>No comments yet. Be the first to comment!</p>
+</div>
+{% endfor %}

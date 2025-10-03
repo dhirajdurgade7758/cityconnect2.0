@@ -1,0 +1,97 @@
+<!-- core/partials/post_card.html -->
+<div class="complaint-card {% if post.status == 'resolved' %}accent-green{% endif %}" data-post-id="{{ post.id }}">
+    
+    <!-- Post Header -->
+    <div class="card-header">
+        <div class="avatar">
+            {% if post.user.profile.avatar %}
+                <img src="{{ post.user.profile.avatar.url }}" alt="{{ post.user.username }}">
+            {% else %}
+                <div class="avatar-initial">{{ post.user.username|first|upper }}</div>
+            {% endif %}
+        </div>
+        <div class="user-info">
+            <h3>{{ post.user.username }}</h3>
+            <div class="meta-info">
+                <span class="icon-location"></span>
+                <span>{{ post.location_name }}</span>
+                <span>•</span>
+                <span>{{ post.created_at|timesince }} ago</span>
+            </div>
+        </div>
+        <div class="status-badge status-{{ post.status|lower|cut:' ' }}">
+            {{ post.status }}
+        </div>
+    </div>
+    
+    <!-- Post Image -->
+    {% if post.image %}
+    <div class="media-carousel">
+        <div class="media-container">
+            <div class="media-slides">
+                <div class="media-slide">
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}">
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Post Body -->
+    <div class="card-content">
+        <h2>{{ post.title }}</h2>
+        <p>{{ post.description }}</p>
+    </div>
+    
+    <!-- Actions -->
+    <div class="card-actions d-flex align-items-center justify-content-between mt-2">
+        
+        <!-- Left: Like + Comment -->
+        <div class="action-buttons d-flex align-items-center gap-2">
+            <!-- Like -->
+            <button hx-post="{% url 'toggle_like' post.id %}"
+                hx-target="closest .complaint-card"
+                hx-swap="outerHTML"
+                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                class="btn btn-sm btn-outline-danger {% if post.is_liked_by %}active{% endif %}"
+                title="{% if post.is_liked_by %}Unlike{% else %}Like{% endif %}">
+                <i class="bi {% if post.is_liked_by %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
+                <span>{{ post.likes.count }}</span>
+            </button>
+
+            <!-- Comment -->
+            <button class="btn btn-sm btn-outline-secondary" onclick="openCommentModal('{{ post.id }}')" title="Comment">
+                <i class="bi bi-chat"></i>
+                <span>{{ post.comments.count }}</span>
+            </button>
+        </div>
+
+        <!-- Right: Save + Share -->
+        <div class="d-flex align-items-center gap-2">
+            <!-- Save -->
+           <!-- Save -->
+<form hx-post="{% url 'toggle_save_post' post.id %}" 
+      hx-target="closest .complaint-card"
+      hx-swap="outerHTML"
+      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    {% if post.id in saved_posts %}
+        <button type="submit" class="btn btn-sm btn-warning" title="Unsave">
+            <i class="bi bi-bookmark-fill text-dark"></i>
+        </button>
+    {% else %}
+        <button type="submit" class="btn btn-sm btn-outline-primary" title="Save">
+            <i class="bi bi-bookmark text-primary"></i>
+        </button>
+    {% endif %}
+</form>
+
+
+            <!-- Share -->
+            <button type="button" class="btn btn-sm btn-outline-success" 
+                onclick="copyToClipboard('{{ request.scheme }}://{{ request.get_host }}{% url 'post_detail' post.id %}')" 
+                title="Share Post">
+                <i class="bi bi-share"></i>
+            </button>
+        </div>
+    </div>
+</div>

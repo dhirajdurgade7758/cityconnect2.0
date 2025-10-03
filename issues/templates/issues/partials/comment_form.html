@@ -1,0 +1,18 @@
+<form id="comment-form" 
+      hx-post="{% url 'post_comments' post.id %}"
+      hx-target="#comments-list"
+      hx-swap="innerHTML"
+      class="add-comment">
+    {% csrf_token %}
+    <div class="comment-form">
+        <div class="comment-avatar">
+            {% if request.user.profile.avatar %}
+                <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}">
+            {% else %}
+                <div class="avatar-initial">{{ request.user.username|first|upper }}</div>
+            {% endif %}
+        </div>
+        <textarea name="text" class="comment-input" placeholder="Add a comment..." required></textarea>
+        <button type="submit" class="submit-btn">Post</button>
+    </div>
+</form>

@@ -1,0 +1,18 @@
+{% extends 'core/base.html' %}
+{% block title %}Contact Us{% endblock %}
+{% block content %}
+<h3>Contact / Support</h3>
+<p>If you’re facing any issue or have suggestions, let us know.</p>
+
+<form method="POST" class="mt-3">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-primary">Send Message</button>
+</form>
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-success mt-3">{{ message }}</div>
+  {% endfor %}
+{% endif %}
+{% endblock %}

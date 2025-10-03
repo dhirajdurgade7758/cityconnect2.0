@@ -1,0 +1,351 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}EcoCoin Store{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Hero Section -->
+    <div class="bg-white shadow-sm">
+        <div class="max-w-6xl mx-auto px-8 py-12">
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
+                <div class="flex-1">
+                    <div class="flex items-center gap-4 mb-3">
+                        <div class="p-3 bg-indigo-100 rounded-xl">
+                            <i class="fas fa-store text-indigo-600 text-2xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-4xl font-bold text-gray-900 mb-1">EcoCoin Store</h1>
+                            <p class="text-gray-600 text-lg">Transform your eco-actions into meaningful rewards</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- EcoCoins balance card -->
+                <div class="bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 rounded-2xl p-8 text-white shadow-xl min-w-[320px] relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <p class="text-indigo-200 text-sm font-medium uppercase tracking-wide">Available Balance</p>
+                                <p class="text-4xl font-bold mt-1">{{ user_coins }}</p>
+                                <p class="text-indigo-200 text-base">EcoCoins</p>
+                            </div>
+                            <div class="p-4 bg-white/20 rounded-2xl backdrop-blur-sm">
+                                <i class="fas fa-coins text-3xl"></i>
+                            </div>
+                        </div>
+                        <div class="h-px bg-white/20 my-4"></div>
+                        <p class="text-indigo-200 text-sm">Keep earning to unlock more rewards!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+        <div class="max-w-6xl mx-auto px-8 pt-8">
+            {% for message in messages %}
+                <div class="mb-4 p-5 rounded-xl border-l-4 shadow-sm {% if message.tags == 'success' %}bg-emerald-50 border-emerald-500 text-emerald-800{% elif message.tags == 'error' %}bg-red-50 border-red-500 text-red-800{% else %}bg-blue-50 border-blue-500 text-blue-800{% endif %}">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            {% if message.tags == 'success' %}
+                                <i class="fas fa-check-circle text-emerald-600"></i>
+                            {% elif message.tags == 'error' %}
+                                <i class="fas fa-exclamation-circle text-red-600"></i>
+                            {% else %}
+                                <i class="fas fa-info-circle text-blue-600"></i>
+                            {% endif %}
+                            <span class="font-medium">{{ message }}</span>
+                        </div>
+                        <button type="button" class="text-gray-400 hover:text-gray-600 p-1" onclick="this.parentElement.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Main content -->
+    <div class="max-w-6xl mx-auto px-8 py-12">
+        <!-- Removed instructional labels and simplified filter section -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-12">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="p-2 bg-gray-100 rounded-lg">
+                    <i class="fas fa-filter text-gray-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900">Find Your Perfect Reward</h3>
+            </div>
+            
+            <form method="get" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                <!-- Removed "Search Offers" label and placeholder text -->
+                <div class="lg:col-span-2">
+                    <div class="relative">
+                        <input type="text" 
+                               class="w-full pl-12 pr-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-gray-50 focus:bg-white" 
+                               id="search" 
+                               name="search" 
+                               value="{{ search_query }}">
+                        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                </div>
+
+                <!-- Removed "Category" label -->
+                <div>
+                    <select class="w-full py-4 px-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-gray-50 focus:bg-white" 
+                            id="category" 
+                            name="category">
+                        <option value="all" {% if category_filter == 'all' %}selected{% endif %}>All Categories</option>
+                        <option value="shop_offer" {% if category_filter == 'shop_offer' %}selected{% endif %}>Shop Offers</option>
+                        <option value="donor_gift" {% if category_filter == 'donor_gift' %}selected{% endif %}>Donor Gifts</option>
+                        <option value="event_ticket" {% if category_filter == 'event_ticket' %}selected{% endif %}>Event Tickets</option>
+                        <option value="eco_reward" {% if category_filter == 'eco_reward' %}selected{% endif %}>Eco Rewards</option>
+                    </select>
+                </div>
+
+                <!-- Removed "Sort By" label -->
+                <div>
+                    <select class="w-full py-4 px-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-gray-50 focus:bg-white" 
+                            id="sort" 
+                            name="sort">
+                        <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name</option>
+                        <option value="coins_asc" {% if sort_by == 'coins_asc' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="coins_desc" {% if sort_by == 'coins_desc' %}selected{% endif %}>Price: High to Low</option>
+                        <option value="stock" {% if sort_by == 'stock' %}selected{% endif %}>Stock Available</option>
+                        <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest First</option>
+                    </select>
+                </div>
+
+                <!-- Simplified filter button text -->
+                <div class="flex items-end">
+                    <button type="submit" 
+                            class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl">
+                        <i class="fas fa-filter"></i>
+                        Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results info -->
+        {% if offers %}
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <p class="text-gray-600 text-lg">
+                        <span class="font-bold text-gray-900">{{ offers.start_index }}-{{ offers.end_index }}</span> 
+                        of <span class="font-bold text-gray-900">{{ total_offers }}</span> offers
+                    </p>
+                </div>
+                <div class="flex gap-3">
+                    <button class="p-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors duration-200 hover:border-gray-400">
+                        <i class="fas fa-th-large text-gray-600"></i>
+                    </button>
+                    <button class="p-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors duration-200 hover:border-gray-400">
+                        <i class="fas fa-list text-gray-600"></i>
+                    </button>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Offers grid -->
+        {% if offers %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                {% for offer in offers %}
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 hover:shadow-xl hover:border-gray-300 transition-all duration-300 overflow-hidden group">
+                        <div class="relative overflow-hidden h-56">
+                            {% if offer.image %}
+                                <img src="{{ offer.image.url }}" 
+                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                                     alt="{{ offer.name }}">
+                            {% else %}
+                                <div class="w-full h-full bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 flex items-center justify-center">
+                                    <i class="fas fa-image text-5xl text-gray-400"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Kept category badges but removed instructional nature -->
+                            <div class="absolute top-4 right-4">
+                                {% if offer.offer_type == 'shop_offer' %}
+                                    <span class="bg-blue-600 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg">Shop</span>
+                                {% elif offer.offer_type == 'donor_gift' %}
+                                    <span class="bg-emerald-600 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg">Gift</span>
+                                {% elif offer.offer_type == 'event_ticket' %}
+                                    <span class="bg-purple-600 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg">Event</span>
+                                {% else %}
+                                    <span class="bg-orange-600 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg">Eco</span>
+                                {% endif %}
+                            </div>
+
+                            {% if offer.stock < 5 %}
+                                <div class="absolute top-4 left-4">
+                                    <span class="bg-red-600 text-white px-3 py-2 rounded-full text-xs font-bold shadow-lg animate-pulse">
+                                        {{ offer.stock }} left
+                                    </span>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="p-8">
+                            <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2 leading-tight">{{ offer.name }}</h3>
+                            <p class="text-gray-600 mb-6 line-clamp-3 leading-relaxed">{{ offer.description|truncatewords:20 }}</p>
+                            
+                            <!-- Removed instructional labels like "Price" and "Stock" -->
+                            <div class="space-y-4 mb-8">
+                                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2 bg-yellow-100 rounded-lg">
+                                            <i class="fas fa-coins text-yellow-600"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-xl text-gray-900">{{ offer.coins_required }} coins</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-semibold text-gray-900">{{ offer.stock }} available</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center gap-3 text-sm text-gray-600">
+                                    <i class="fas fa-map-marker-alt text-gray-400"></i>
+                                    <span>{{ offer.location_name }}</span>
+                                </div>
+                                
+                                <div class="flex items-center gap-3 text-sm text-gray-600">
+                                    <i class="fas fa-calendar text-gray-400"></i>
+                                    <span>Valid until {{ offer.end_date }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Simplified button text -->
+                            <div class="space-y-3">
+                                <a href="{% url 'offer_detail' offer.id %}" 
+                                   class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 border border-gray-200 hover:border-gray-300">
+                                    <i class="fas fa-eye"></i>
+                                    Details
+                                </a>
+                                
+                                {% if offer.is_active %}
+                                    {% if user_coins >= offer.coins_required %}
+                                        <form method="post" action="{% url 'redeem_offer' offer.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" 
+                                                    class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                                                    onclick="return confirm('Redeem {{ offer.name }} for {{ offer.coins_required }} coins?')">
+                                                <i class="fas fa-shopping-cart"></i>
+                                                Redeem
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <button class="w-full bg-gray-300 text-gray-500 font-semibold py-4 px-6 rounded-xl cursor-not-allowed flex items-center justify-center gap-2" 
+                                                disabled>
+                                            <i class="fas fa-coins"></i>
+                                            Need {{ offer.coins_required|add:user_coins|add:"-"|add:user_coins }} more
+                                        </button>
+                                    {% endif %}
+                                {% else %}
+                                    <button class="w-full bg-red-100 text-red-600 font-semibold py-4 px-6 rounded-xl cursor-not-allowed flex items-center justify-center gap-2" 
+                                            disabled>
+                                        <i class="fas fa-times"></i>
+                                        Unavailable
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if offers.has_other_pages %}
+                <div class="flex justify-center">
+                    <nav class="flex items-center gap-2">
+                        {% if offers.has_previous %}
+                            <a href="?page={{ offers.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter != 'all' %}&category={{ category_filter }}{% endif %}{% if sort_by != 'name' %}&sort={{ sort_by }}{% endif %}" 
+                               class="px-4 py-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors duration-200 shadow-sm">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        {% endif %}
+                        
+                        {% for num in offers.paginator.page_range %}
+                            {% if offers.number == num %}
+                                <span class="px-5 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg">{{ num }}</span>
+                            {% elif num > offers.number|add:'-3' and num < offers.number|add:'3' %}
+                                <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter != 'all' %}&category={{ category_filter }}{% endif %}{% if sort_by != 'name' %}&sort={{ sort_by }}{% endif %}" 
+                                   class="px-5 py-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors duration-200 shadow-sm">
+                                    {{ num }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if offers.has_next %}
+                            <a href="?page={{ offers.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter != 'all' %}&category={{ category_filter }}{% endif %}{% if sort_by != 'name' %}&sort={{ sort_by }}{% endif %}" 
+                               class="px-4 py-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors duration-200 shadow-sm">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        {% endif %}
+                    </nav>
+                </div>
+            {% endif %}
+        {% else %}
+            <!-- Simplified no offers state text -->
+            <div class="text-center py-20">
+                <div class="max-w-md mx-auto">
+                    <div class="p-6 bg-gray-100 rounded-full w-24 h-24 mx-auto mb-8 flex items-center justify-center">
+                        <i class="fas fa-search text-4xl text-gray-400"></i>
+                    </div>
+                    <h3 class="text-3xl font-bold text-gray-900 mb-4">No offers found</h3>
+                    {% if search_query or category_filter != 'all' %}
+                        <p class="text-gray-600 mb-8 text-lg">Try different filters</p>
+                        <a href="{% url 'store_view' %}" 
+                           class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 px-8 rounded-xl transition-colors duration-200 shadow-lg">
+                            <i class="fas fa-refresh"></i>
+                            Clear Filters
+                        </a>
+                    {% else %}
+                        <p class="text-gray-600 mb-8 text-lg">Check back later for new rewards</p>
+                        <a href="{% url 'tasks' %}" 
+                           class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 px-8 rounded-xl transition-colors duration-200 shadow-lg">
+                            <i class="fas fa-tasks"></i>
+                            Earn Coins
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Simplified quick actions section -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-10 mt-16">
+            <div class="text-center mb-10">
+                <h3 class="text-3xl font-bold text-gray-900 mb-3">Quick Actions</h3>
+                <p class="text-gray-600 text-lg">Manage rewards and earn coins</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+                <a href="{% url 'redemption_history' %}" 
+                   class="flex items-center gap-6 p-8 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl hover:from-blue-100 hover:to-indigo-200 transition-all duration-300 group border border-blue-200 hover:border-blue-300">
+                    <div class="p-4 bg-blue-600 rounded-2xl group-hover:bg-blue-700 transition-colors duration-200 shadow-lg">
+                        <i class="fas fa-history text-white text-2xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-900 text-lg mb-1">My Redemptions</h4>
+                        <p class="text-gray-600">View reward history</p>
+                    </div>
+                </a>
+                
+                <a href="{% url 'tasks' %}" 
+                   class="flex items-center gap-6 p-8 bg-gradient-to-br from-emerald-50 to-green-100 rounded-2xl hover:from-emerald-100 hover:to-green-200 transition-all duration-300 group border border-emerald-200 hover:border-emerald-300">
+                    <div class="p-4 bg-emerald-600 rounded-2xl group-hover:bg-emerald-700 transition-colors duration-200 shadow-lg">
+                        <i class="fas fa-tasks text-white text-2xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-900 text-lg mb-1">Earn More Coins</h4>
+                        <p class="text-gray-600">Complete tasks for rewards</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
