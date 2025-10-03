@@ -15,6 +15,7 @@ from django.utils.decorators import method_decorator
 from django.views import View
 import googlemaps
 from django.conf import settings
+from django.urls import reverse
 
 User = get_user_model()
 
@@ -129,9 +130,11 @@ class MapView(View):
             data = {
                 'lat': float(a.reported_latitude), 
                 'lng': float(a.reported_longitude), 
+                'id': a.id,
                 'name': a.location_name,
                 'image':a.image.url,
                 'description': a.description,
+                'url': reverse('feed'),
             }
             locations.append(data)
         print(locations)
