@@ -18,7 +18,7 @@ def verify_issue_image_gemini(image_path, prompt):
         return {"error": "No Gemini API key set"}
 
     try:
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel("gemini-2.5-flash")
 
         with open(image_path, "rb") as f:
             image_bytes = f.read()
@@ -54,7 +54,7 @@ def verify_task_image_gemini(image_path, prompt):
         return {"error": "No Gemini API key set"}
 
     try:
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel("gemini-2.5-flash")
 
         with open(image_path, "rb") as f:
             image_bytes = f.read()

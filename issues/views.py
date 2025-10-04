@@ -50,6 +50,73 @@ def reverse_geocode(lat, lon):
     except Exception as e:
         print("Reverse geocoding error:", e)
         return None
+    
+
+import requests
+from django.conf import settings
+
+def get_short_location_google(lat, lon):
+    """
+    Get the nearest known landmark or locality using Google Places API.
+    """
+    try:
+        api_key = getattr(settings, "GOOGLE_API_KEY", None)
+        if not api_key:
+            print("⚠️ GOOGLE_API_KEY not found in settings.")
+            return "Unknown location"
+
+        # ✅ Fixed parameters: remove radius when using rankby=distance
+        url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
+        params = {
+            "location": f"{lat},{lon}",
+            "rankby": "distance",   # rank results by closeness
+            "keyword": "landmark",  # helps focus on recognizable places
+            "key": api_key
+        }
+
+        print(f"🌍 Sending request to Google Places API...")
+        print(f"➡️ URL: {url}")
+        print(f"➡️ Params: {params}")
+
+        res = requests.get(url, params=params, timeout=5)
+        print(f"✅ HTTP Status: {res.status_code}")
+
+        if res.status_code != 200:
+            print(f"❌ Google API HTTP error: {res.text}")
+            return "Unknown location"
+
+        data = res.json()
+        print(f"📦 Raw Google Response: {data}")
+
+        if "error_message" in data:
+            print(f"❌ Google API error: {data['error_message']}")
+            return "Unknown location"
+
+        results = data.get("results", [])
+        if not results:
+            print("⚠️ No nearby places found.")
+            return "Unknown location"
+
+        # ✅ Take the nearest recognizable place
+        place = results[0]
+        name = place.get("name")
+        vicinity = place.get("vicinity", "")
+        print(f"🏙️ Closest place: {name}, Vicinity: {vicinity}")
+
+        if name:
+            short_name = f"Near {name}" if "Near" not in name else name
+            print(f"✅ Short location name: {short_name}")
+            return short_name
+
+        if vicinity:
+            print(f"⚠️ Using vicinity: {vicinity}")
+            return f"Near {vicinity}"
+
+        return "Unknown location"
+
+    except Exception as e:
+        print(f"❌ Exception during reverse geocoding: {e}")
+        return "Unknown location"
 
 
 @login_required
@@ -68,7 +135,7 @@ def create_issue_post(request):
 
             # Generate location_name and map URL if coordinates provided
             if lat and lon:
-                location_name = reverse_geocode(lat, lon)
+                location_name = get_short_location_google(lat, lon)
                 issue.location_name = location_name
                 issue.location_map_url = f"https://www.google.com/maps?q={lat},{lon}"
 
@@ -140,8 +207,6 @@ def feed(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     saved_posts = SavedPost.objects.filter(user=request.user).values_list('post_id', flat=True)
-    for post in page_obj:
-        print(post.location_name)
     
     context = {
         'posts': page_obj,

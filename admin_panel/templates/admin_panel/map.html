@@ -2,44 +2,64 @@
 {% load static %}
 {% block content %}
 
+<link rel="stylesheet" href="{% static 'css/map.css' %}">
 
 <script>
     let map;
 
     function initMap() {
         var locations = {{ locations|safe }};
+        if (locations.length === 0) return;
+
         var firstLocation = locations[0];
         var infoWindow = [];
 
-        // ✅ Initialise map
+        // ✅ Initialize Google Map
         map = new google.maps.Map(document.getElementById("map"), {
             center: { lat: firstLocation.lat, lng: firstLocation.lng },
             zoom: 12,
-            mapId: "166a24379880273b1db32e96"  
+            mapId: "166a24379880273b1db32e96"
         });
+
+        // ✅ Marker colors for different statuses
+        const statusColors = {
+            pending: "#ff5252",       // red
+            in_progress: "#ffca28",   // yellow
+            resolved: "#4caf50"       // green
+        };
 
         // ✅ Add custom markers with InfoWindows
         locations.forEach(function (location) {
+            const color = statusColors[location.status] || "#9e9e9e";
+
+            // Create custom marker
+            const markerDiv = document.createElement("div");
+            markerDiv.classList.add("custom-marker");
+            markerDiv.style.backgroundColor = color;
+
             const marker = new google.maps.marker.AdvancedMarkerElement({
                 position: { lat: location.lat, lng: location.lng },
                 map: map,
                 title: location.name,
-                // ✅ Custom marker icon (change PNG as you want)
-                content: document.createElement("div")
+                content: markerDiv
             });
 
-            // Custom marker design
-            marker.content.innerHTML = `
-                <div class="custom-marker"></div>
-            `;
-
-            var infowindow = new google.maps.InfoWindow({
+            // ✅ InfoWindow content (modern design)
+            const infowindow = new google.maps.InfoWindow({
                 content: `
                     <div class="info-window">
-                        <h3>${location.name}</h3>
+                        <h3 class="info-title">${location.name}</h3>
                         <img src="${location.image}" alt="${location.name}" class="info-img"/>
-                        <p>${location.description}</p>
-                        <a href="${location.url}"> view post </a>
+                        <div class="info-body">
+                            <p><strong>Status:</strong> 
+                                <span class="status ${location.status}">${location.status.replace('_',' ')}</span>
+                            </p>
+                            <p>${location.description}</p>
+                            <div class="info-actions">
+                                <a href="${location.url}" class="view-btn">View Details</a>
+                                <button class="resolve-btn" onclick="resolveIssue(${location.id})">Mark as Resolved</button>
+                            </div>
+                        </div>
                     </div>
                 `,
             });
@@ -47,12 +67,16 @@
             infoWindow.push(infowindow);
 
             marker.addListener("click", function () {
-                infoWindow.forEach(function (iw) {
-                    iw.close();
-                });
+                infoWindow.forEach(iw => iw.close());
                 infowindow.open(map, marker);
             });
         });
+    }
+
+    // ✅ Example function (you can later connect to Django view via fetch)
+    function resolveIssue(issueId) {
+        alert(`Issue #${issueId} marked as resolved!`);
+        // TODO: send AJAX request to Django endpoint to update status
     }
 
     window.initMap = initMap;
