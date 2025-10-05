@@ -45,6 +45,10 @@
             });
 
             // ✅ InfoWindow content (modern design)
+            const buttonHTML = location.status === "resolved"
+                    ? `<button class="resolve-btn" disabled>Resolved</button>`
+                    : `<button class="resolve-btn" onclick="resolveIssue(${location.id})">Mark as Resolved</button>`;
+
             const infowindow = new google.maps.InfoWindow({
                 content: `
                     <div class="info-window">
@@ -57,7 +61,7 @@
                             <p>${location.description}</p>
                             <div class="info-actions">
                                 <a href="${location.url}" class="view-btn">View Details</a>
-                                <button class="resolve-btn" onclick="resolveIssue(${location.id})">Mark as Resolved</button>
+                                ${buttonHTML}
                             </div>
                         </div>
                     </div>
