@@ -1,6 +1,6 @@
 <h1>{{ department|capfirst }} Department Dashboard</h1>
-<a href="{% url 'admin_panel:admin_logout' %}">Logout</a>
-<a href="{% url "admin_panel:my_map_view" %}">view issues on map</a>
+<a href="{% url 'admin_logout' %}">Logout</a>
+<a href="{% url "my_map_view" %}">view issues on map</a>
 
 
 <table border="1">
@@ -22,7 +22,7 @@
       <td><a href="{{issue.location_map_url}}">View on Map</a></td>
       <td>{{ issue.get_status_display }}</td>
       <td>{{ issue.created_at }}</td>
-      <td><a href="{% url 'admin_panel:issue_detail' department issue.id %}">View / Update</a></td>
+      <td><a href="{% url 'issue_detail' department issue.id %}">View / Update</a></td>
     </tr>
     {% empty %}
     <tr><td colspan="5">No issues found.</td></tr>

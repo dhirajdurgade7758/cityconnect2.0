@@ -1,0 +1,51 @@
+{% extends 'admin_panel/base.html' %}
+{% block content %}
+
+<h2 class="text-xl font-bold mb-4">🗂 Reported Issues</h2>
+
+<!-- Filter dropdown -->
+<form method="get" class="mb-3">
+  <select name="status" onchange="this.form.submit()" class="form-select">
+    <option value="">All</option>
+    <option value="pending">Pending</option>
+    <option value="in_progress">In Progress</option>
+    <option value="resolved">Resolved</option>
+  </select>
+</form>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Department</th>
+      <th>Status</th>
+      <th>Reported By</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for issue in issues %}
+    <tr>
+      <td>{{ issue.title }}</td>
+      <td>{{ issue.get_department_display }}</td>
+      <td>
+        {% if issue.status == "pending" %}
+          <span class="badge bg-warning text-dark">Pending</span>
+        {% elif issue.status == "in_progress" %}
+          <span class="badge bg-primary">In Progress</span>
+        {% else %}
+          <span class="badge bg-success">Resolved</span>
+        {% endif %}
+      </td>
+      <td>{{ issue.user.username }}</td>
+      <td>
+        <a href="{% url 'resolve_issue' issue.id %}" class="btn btn-outline-primary btn-sm">Update</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">No issues found.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

@@ -16,6 +16,10 @@ from django.views import View
 import googlemaps
 from django.conf import settings
 from django.urls import reverse
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import user_passes_test
+from django.utils import timezone
+from .forms import ResolveIssueForm
 
 User = get_user_model()
 
@@ -112,6 +116,7 @@ class MapView(View):
                 'description': a.description,
                 'status':a.status,
                 'url': reverse('feed'),
+                'resolve_url': reverse('resolve_issue', args=[a.id]),
             }
             locations.append(data)
         print(locations)
@@ -121,3 +126,40 @@ class MapView(View):
         }
 
         return render(request, self.template_name, context)
+    
+
+
+
+def is_admin(user):
+    return user.is_staff or user.is_superuser
+
+@user_passes_test(is_admin)
+def issue_list(request):
+    status_filter = request.GET.get('status')
+    if status_filter:
+        issues = IssuePost.objects.filter(status=status_filter)
+    else:
+        issues = IssuePost.objects.all()
+    return render(request, 'admin_panel/issue_list.html', {'issues': issues})
+
+@user_passes_test(is_admin)
+def resolve_issue(request, id):
+    issue = get_object_or_404(IssuePost, id=id)
+    if request.method == 'POST':
+        form = ResolveIssueForm(request.POST, request.FILES, instance=issue)
+        if form.is_valid():
+            issue = form.save(commit=False)
+
+            # Handle resolved timestamp logic
+            if issue.status == 'resolved':
+                issue.resolved_at = timezone.now()
+                issue.resolved_by = request.user
+            else:
+                issue.resolved_at = None  # Clear if reverted
+                issue.resolved_by = None
+
+            issue.save()
+            return redirect('issue_list')
+    else:
+        form = ResolveIssueForm(instance=issue)
+    return render(request, 'admin_panel/resolve_issue.html', {'form': form, 'issue': issue})

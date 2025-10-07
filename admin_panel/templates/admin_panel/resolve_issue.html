@@ -1,0 +1,26 @@
+{% extends 'admin_panel/base.html' %}
+{% block content %}
+<h2 class="text-xl font-bold mb-3">Resolve / Update Issue: {{ issue.title }}</h2>
+
+<div class="card p-3 mb-4">
+  <h4>Description:</h4>
+  <p>{{ issue.description }}</p>
+  {% if issue.image %}
+    <img src="{{ issue.image.url }}" alt="Issue Image" width="350" class="rounded shadow mt-2">
+  {% endif %}
+</div>
+
+<form method="POST" enctype="multipart/form-data" class="card p-3">
+  {% csrf_token %}
+  <label>Status:</label>
+  {{ form.status }}
+
+  <label class="mt-3">Resolution Details:</label>
+  {{ form.resolved_description }}
+
+  <label class="mt-3">Resolved Photo (optional):</label>
+  {{ form.resolved_image }}
+
+  <button type="submit" class="btn btn-success mt-3">Save Changes</button>
+</form>
+{% endblock %}

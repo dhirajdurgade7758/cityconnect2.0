@@ -47,7 +47,7 @@
             // ✅ InfoWindow content (modern design)
             const buttonHTML = location.status === "resolved"
                     ? `<button class="resolve-btn" disabled>Resolved</button>`
-                    : `<button class="resolve-btn" onclick="resolveIssue(${location.id})">Mark as Resolved</button>`;
+                    : `<a class="resolve-btn" href="${location.resolve_url}"> resolve issue </a>`;
 
             const infowindow = new google.maps.InfoWindow({
                 content: `

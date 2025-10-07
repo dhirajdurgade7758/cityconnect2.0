@@ -87,6 +87,12 @@ class IssuePost(models.Model):
     verification_score = models.FloatField(null=True, blank=True)
     verification_details = models.TextField(null=True, blank=True)
 
+
+    resolved_image = models.ImageField(upload_to='resolved_issues/', null=True, blank=True)
+    resolved_description = models.TextField(null=True, blank=True, help_text="Describe how the issue was resolved.")
+    resolved_at = models.DateTimeField(null=True, blank=True)
+    resolved_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='resolved_issues')
+
     def __str__(self):
         return f"{self.title} - {self.user.username}"
 
