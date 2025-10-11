@@ -23,7 +23,7 @@ SECRET_KEY = 'django-insecure-r2tm1s94dal&j5qxfi30ngptav_$h0)1)zn)kv%sk)uz935%0i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.202.110', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['192.168.108.242', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'store',  # Your store app
     'issues',  # Your issues app
     'admin_panel', 
-    'django_extensions'
+    'django_extensions',
+    'widget_tweaks',
     
 ]
 

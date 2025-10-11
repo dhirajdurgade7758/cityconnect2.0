@@ -117,6 +117,7 @@ class MapView(View):
                 'status':a.status,
                 'url': reverse('feed'),
                 'resolve_url': reverse('resolve_issue', args=[a.id]),
+                'department':a.department,
             }
             locations.append(data)
         print(locations)

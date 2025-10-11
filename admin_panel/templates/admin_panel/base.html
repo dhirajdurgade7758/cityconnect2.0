@@ -1,39 +1,107 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-    <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     
-    <link rel="stylesheet" type="text/css" href="{% static 'css/map.css'%}">
-   <!--  <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
-    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="crossorigin="anonymous"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
     
-    <!-- For formatting dates -->
-    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
-    <script src="//cdn.datatables.net/plug-ins/1.10.21/sorting/datetime-moment.js"></script>  
+    <link rel="stylesheet" type="text/css" href="{% static 'css/map.css' %}">
 
-    <title> Django Google Maps Tutorial</title>
+    <title>{% block title %}Admin Panel{% endblock title %}</title>
 
+    {% block extra_head %}{% endblock extra_head %}
 </head>
 
-<body>
+<body class="d-flex flex-column vh-100">
 
-<div class="topnav">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+            <div class="container-fluid">
+                {# The brand now links to the main issue list as a default home page #}
+                <a class="navbar-brand fw-bold" href="{% url 'issue_list' %}">
+                    <i class="bi bi-shield-lock-fill"></i>
+                    Admin Panel
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav" aria-controls="main-nav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="main-nav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            {# This link is now smart: it links to the department dashboard if possible, otherwise falls back #}
+                            {# This is the new, corrected code #}
+{% if user.is_authenticated and user.department and user.department.name %}
+    <a class="nav-link" href="{% url 'department_dashboard' department=user.department %}"><i class="bi bi-house-door me-1"></i>Dashboard</a>
+{% else %}
+    {# This is a safe fallback for any user without a specific department name #}
+    <a class="nav-link" href="{% url 'department_dashboard' department=user.department %}"><i class="bi bi-house-door me-1"></i>Dashboard</a>
+{% endif %}
+                        </li>
+                        <li class="nav-item">
+                            {# Links directly to the issue list view #}
+                            <a class="nav-link" href="{% url 'issue_list' %}"><i class="bi bi-bug me-1"></i>Issues</a>
+                        </li>
+                        {% comment %} <li class="nav-item">
+                            {# TODO: Create a URL and View for a Users page and add the name here #}
+                            <a class="nav-link" href="#"><i class="bi bi-people me-1"></i>Users</a>
+                        </li> {% endcomment %}
+                        <li class="nav-item">
+                             {# Links to your Map View #}
+                            <a class="nav-link" href="{% url 'my_map_view' %}"><i class="bi bi-map me-1"></i>Map</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav ms-auto">
+                        {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle me-1"></i>{{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#">Profile</a></li>
+                                <li><a class="dropdown-item" href="#">Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                {# Links to the admin_logout URL #}
+                                <li><a class="dropdown-item" href="{% url 'admin_logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            {# Links to the admin_login URL #}
+                            <a class="nav-link" href="{% url 'admin_login' %}">Login</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="flex-shrink-0">
+        {% block content %}
+        {% endblock content %}
+    </main>
     
-</div>
+    <footer class="mt-auto bg-light text-center text-lg-start">
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+            © {% now "Y" %} Admin Panel Application
+        </div>
+    </footer>
 
-{% block content %}
 
-{% endblock content %}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js"></script>
+    <script src="//cdn.datatables.net/plug-ins/1.13.6/sorting/datetime-moment.js"></script>
+    
+    {% block extra_scripts %}{% endblock extra_scripts %}
 
- 
 </body>
 </html>
