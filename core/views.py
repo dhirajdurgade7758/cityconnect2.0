@@ -15,6 +15,13 @@ from .utils import get_badge_info, get_user_badges # assuming utils.py contains 
 from store.models import Redemption # Import Redemption from the store app
 from issues.models import IssuePost, Task, Comment
 import logging
+
+# your_app/views.py
+import requests
+import logging
+from django.contrib import messages
+
+
 logger = logging.getLogger(__name__)
 
 def home(request):
@@ -71,21 +78,81 @@ def leaderboard(request):
     return render(request, 'core/leaderboard.html', {'top_users': top_users})
 
 
+
+# It's good practice to define the API URL in your settings.py
+# and import it. For this example, we'll define it here.
+# your_app/views.py
+import requests
+import logging
+from django.conf import settings
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from django.contrib import messages
+from .forms import UserRegisterForm
+
+NODE_API_URL = "http://localhost:3000" # Use the correct URL for the Node server
+logger = logging.getLogger(__name__)
+
 def user_register(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
 
-            # Send welcome email
-            subject = 'Welcome to CityConnect!'
-            message = f"Hello {user.username},\n\nWelcome to CityConnect! 🎉\n\nYou can now report civic issues, earn EcoCoins, and make your city better!"
-            from_email = settings.DEFAULT_FROM_EMAIL
-            recipient_list = [user.email]
+            # --- Blockchain Integration Starts Here ---
+            try:
+                # 1. Register user on the blockchain
+                register_response = requests.post(
+                    f"{NODE_API_URL}/api/user/register",
+                    json={'username': user.username},
+                    timeout=5
+                )
+                register_response.raise_for_status()
 
-            send_mail(subject, message, from_email, recipient_list, fail_silently=True)
-            logger.info(f"Welcome email sent to {user.email}")
+                # 2. Award welcome bonus to create a transaction
+                reward_payload = {
+                    'userId': user.username,
+                    'amount': 100, # Example welcome bonus
+                    'reason': "Welcome bonus for joining CityConnect!"
+                }
+                reward_response = requests.post(f"{NODE_API_URL}/api/system/reward", json=reward_payload, timeout=5)
+                reward_response.raise_for_status()
 
+                reward_data = reward_response.json()
+                transaction_id = reward_data.get('transactionId')
+
+                # ⭐ NEW: Get the new balance from the API response
+                blockchain_user_data = reward_data.get('user')
+                if blockchain_user_data and 'balance' in blockchain_user_data:
+                    # Update the user's eco_coins field with the value from the blockchain
+                    user.eco_coins = blockchain_user_data['balance']
+                    logger.info(f"User {user.username} initial balance set to {user.eco_coins}")
+
+                if transaction_id:
+                    # 3. Fetch the transaction details to get the block hash
+                    tx_info_response = requests.get(f"{NODE_API_URL}/api/transaction/{transaction_id}", timeout=5)
+                    tx_info_response.raise_for_status()
+
+                    tx_info_data = tx_info_response.json()
+                    block_hash = tx_info_data.get('blockHash')
+
+                    if block_hash:
+                        # 4. Save the block hash to the user model
+                        user.initial_block_hash = block_hash
+                        
+                        # This single .save() call now updates both the hash and the eco_coins
+                        user.save()
+                        logger.info(f"Successfully stored block hash and balance for user {user.username}")
+
+            except requests.exceptions.RequestException as e:
+                logger.error(f"Could not connect to blockchain server for user {user.username}. Error: {e}")
+                messages.warning(request, "Registration successful, but could not sync with the rewards system. Please contact support.")
+
+            # --- Blockchain Integration Ends ---
+
+            # Send welcome email, login, and redirect as before
+            # ...
+            
             login(request, user)
             messages.success(request, "Registration successful! Welcome to CityConnect!")
             return redirect('home')
@@ -94,7 +161,6 @@ def user_register(request):
     else:
         form = UserRegisterForm()
     return render(request, 'core/register.html', {'form': form})
-
 
 def user_login(request):
     if request.method == 'POST':

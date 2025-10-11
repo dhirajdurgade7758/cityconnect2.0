@@ -1,0 +1,96 @@
+{% extends 'admin_panel/base.html' %}
+{% load static %}
+
+{% block title %}Create Store Offer{% endblock title %}
+
+{% block content %}
+<div class="container py-5">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Create New Store Offer</h1>
+        <a href="{% url 'store_offer_list' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Offers
+        </a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card shadow-sm">
+        <div class="card-body p-4">
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.name.id_for_label }}" class="form-label">Offer Name</label>
+                        <input type="text" name="{{ form.name.name }}" id="{{ form.name.id_for_label }}" class="form-control" value="{{ form.name.value|default_if_none:'' }}" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="{{ form.offer_type.id_for_label }}" class="form-label">Offer Type</label>
+                        {{ form.offer_type }}
+                        <script>document.getElementById("{{ form.offer_type.id_for_label }}").classList.add("form-select");</script>
+                    </div>
+
+                    <div class="col-12">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                        <textarea name="{{ form.description.name }}" id="{{ form.description.id_for_label }}" class="form-control" rows="4">{{ form.description.value|default_if_none:'' }}</textarea>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="{{ form.coins_required.id_for_label }}" class="form-label">Coins Required</label>
+                        <input type="number" name="{{ form.coins_required.name }}" id="{{ form.coins_required.id_for_label }}" class="form-control" value="{{ form.coins_required.value|default_if_none:'' }}" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="{{ form.stock.id_for_label }}" class="form-label">Stock Quantity</label>
+                        <input type="number" name="{{ form.stock.name }}" id="{{ form.stock.id_for_label }}" class="form-control" value="{{ form.stock.value|default_if_none:'' }}" required>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="{{ form.location_name.id_for_label }}" class="form-label">Location Name</label>
+                        <input type="text" name="{{ form.location_name.name }}" id="{{ form.location_name.id_for_label }}" class="form-control" value="{{ form.location_name.value|default_if_none:'' }}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="{{ form.location_map_url.id_for_label }}" class="form-label">Location Map URL</label>
+                        <input type="url" name="{{ form.location_map_url.name }}" id="{{ form.location_map_url.id_for_label }}" class="form-control" value="{{ form.location_map_url.value|default_if_none:'' }}">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="{{ form.start_date.id_for_label }}" class="form-label">Start Date</label>
+                        <input type="date" name="{{ form.start_date.name }}" id="{{ form.start_date.id_for_label }}" class="form-control" value="{{ form.start_date.value|date:'Y-m-d'|default_if_none:'' }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ form.end_date.id_for_label }}" class="form-label">End Date</label>
+                        <input type="date" name="{{ form.end_date.name }}" id="{{ form.end_date.id_for_label }}" class="form-control" value="{{ form.end_date.value|date:'Y-m-d'|default_if_none:'' }}">
+                    </div>
+                    
+                    <div class="col-12">
+                        <label for="{{ form.image.id_for_label }}" class="form-label">Offer Image</label>
+                        <input type="file" name="{{ form.image.name }}" id="{{ form.image.id_for_label }}" class="form-control">
+                    </div>
+                    
+                    <div class="col-12">
+                        <div class="form-check form-switch mt-2">
+                           <input type="checkbox" name="{{ form.is_active.name }}" id="{{ form.is_active.id_for_label }}" class="form-check-input" {% if form.is_active.value %}checked{% endif %}>
+                           <label for="{{ form.is_active.id_for_label }}" class="form-check-label">Is Active</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 text-end">
+                    <button type="submit" class="btn btn-primary px-5">Create Offer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

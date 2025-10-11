@@ -20,7 +20,7 @@ class User(AbstractUser):
     department = models.CharField(max_length=50, choices=DEPARTMENT_CHOICES, blank=True, null=True)
     eco_coins = models.PositiveIntegerField(default=0)
     area = models.CharField(max_length=100, blank=True)
-
+    initial_block_hash = models.CharField(max_length=64, blank=True, null=True, help_text="The block hash of the user's registration transaction.")
     def clean(self):
         from django.core.exceptions import ValidationError
         # If user is admin, department must be set

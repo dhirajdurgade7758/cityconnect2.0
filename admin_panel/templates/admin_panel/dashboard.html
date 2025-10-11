@@ -158,7 +158,7 @@
               </td>
               <td>{{ issue.created_at|date:"d M Y, P" }}</td>
               <td>
-                <a href="{% url 'issue_detail' department issue.id %}" class="btn btn-primary btn-sm">
+                <a href="{% url 'resolve_issue' issue.id %}" class="btn btn-primary btn-sm">
                   <i class="bi bi-pencil-square me-1"></i>View / Update
                 </a>
               </td>

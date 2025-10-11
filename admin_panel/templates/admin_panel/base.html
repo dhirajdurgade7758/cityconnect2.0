@@ -23,7 +23,6 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
             <div class="container-fluid">
-                {# The brand now links to the main issue list as a default home page #}
                 <a class="navbar-brand fw-bold" href="{% url 'issue_list' %}">
                     <i class="bi bi-shield-lock-fill"></i>
                     Admin Panel
@@ -33,26 +32,26 @@
                 </button>
                 <div class="collapse navbar-collapse" id="main-nav">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        
+                        {% if user.is_authenticated and user.department %}
                         <li class="nav-item">
-                            {# This link is now smart: it links to the department dashboard if possible, otherwise falls back #}
-                            {# This is the new, corrected code #}
-{% if user.is_authenticated and user.department and user.department.name %}
-    <a class="nav-link" href="{% url 'department_dashboard' department=user.department %}"><i class="bi bi-house-door me-1"></i>Dashboard</a>
-{% else %}
-    {# This is a safe fallback for any user without a specific department name #}
-    <a class="nav-link" href="{% url 'department_dashboard' department=user.department %}"><i class="bi bi-house-door me-1"></i>Dashboard</a>
-{% endif %}
+                            <a class="nav-link" href="{% url 'department_dashboard' department=user.department %}"><i class="bi bi-house-door me-1"></i>Dashboard</a>
                         </li>
+                        {% endif %}
+
                         <li class="nav-item">
-                            {# Links directly to the issue list view #}
                             <a class="nav-link" href="{% url 'issue_list' %}"><i class="bi bi-bug me-1"></i>Issues</a>
                         </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'store_offer_list' %}"><i class="bi bi-shop me-1"></i>Store</a>
+                        </li>
+                        
                         {% comment %} <li class="nav-item">
-                            {# TODO: Create a URL and View for a Users page and add the name here #}
                             <a class="nav-link" href="#"><i class="bi bi-people me-1"></i>Users</a>
                         </li> {% endcomment %}
+
                         <li class="nav-item">
-                             {# Links to your Map View #}
                             <a class="nav-link" href="{% url 'my_map_view' %}"><i class="bi bi-map me-1"></i>Map</a>
                         </li>
                     </ul>
@@ -66,13 +65,11 @@
                                 <li><a class="dropdown-item" href="#">Profile</a></li>
                                 <li><a class="dropdown-item" href="#">Settings</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                {# Links to the admin_logout URL #}
                                 <li><a class="dropdown-item" href="{% url 'admin_logout' %}">Logout</a></li>
                             </ul>
                         </li>
                         {% else %}
                         <li class="nav-item">
-                            {# Links to the admin_login URL #}
                             <a class="nav-link" href="{% url 'admin_login' %}">Login</a>
                         </li>
                         {% endif %}

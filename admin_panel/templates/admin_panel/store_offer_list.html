@@ -1,0 +1,49 @@
+{% extends 'admin_panel/base.html' %}
+
+{% load static %}
+
+{% block title %}{{ department|capfirst }}Store Offers{% endblock title %}
+{% block extra_head %}
+    <style>
+        body { font-family: sans-serif; background-color: #f4f4f9; color: #333; margin: 0; }
+        .container { max-width: 900px; margin: 40px auto; padding: 30px; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #4a4a4a; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #f2f2f2; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .btn { display: inline-block; padding: 10px 20px; background-color: #28a745; color: white; border-radius: 4px; text-decoration: none; margin-bottom: 20px; }
+        .btn:hover { background-color: #218838; }
+    </style>
+{% endblock extra_head %}
+{% block content %}
+    <div class="container">
+        <h1>Available Store Offers</h1>
+        <a href="{% url 'create_store_offer' %}" class="btn">Add New Offer</a>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Offer Name</th>
+                    <th>Coins Required</th>
+                    <th>Stock Left</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for offer in offers %}
+                <tr>
+                    <td>{{ offer.name }}</td>
+                    <td>{{ offer.coins_required }}</td>
+                    <td>{{ offer.stock }}</td>
+                    <td>{% if offer.is_available %}Active{% else %}Inactive/Expired{% endif %}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No offers found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
