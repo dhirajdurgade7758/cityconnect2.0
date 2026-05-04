@@ -377,7 +377,12 @@ def saved_posts_view(request):
     page_obj = paginator.get_page(page_number)
     
     return render(request, 'issues/saved_posts.html', {'saved_posts': page_obj})
+# def proof_image_upload_path(instance, filename):
+#     filename = filename.replace(" ", "_")  # replace spaces with underscore
+#     return f'tasks/{filename}'
+# your_app/views.py
 
+# ... (imports remain the same)
 
 @login_required
 def tasks(request):

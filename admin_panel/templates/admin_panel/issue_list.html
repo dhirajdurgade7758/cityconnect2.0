@@ -10,7 +10,7 @@
         <i class="bi bi-journal-text me-2 text-primary"></i>Reported Issues Tracker
       </h4>
       <div class="btn-group" role="group" aria-label="Status filter">
-        <a href="{% url 'issue_list' %}" class="btn {% if not request.GET.status %}btn-primary{% else %}btn-outline-primary{% endif %}">All</a>
+        <a href="{% url 'admin_panel:issue_list' %}" class="btn {% if not request.GET.status %}btn-primary{% else %}btn-outline-primary{% endif %}">All</a>
         <a href="?status=pending" class="btn {% if request.GET.status == 'pending' %}btn-primary{% else %}btn-outline-primary{% endif %}">Pending</a>
         <a href="?status=in_progress" class="btn {% if request.GET.status == 'in_progress' %}btn-primary{% else %}btn-outline-primary{% endif %}">In Progress</a>
         <a href="?status=resolved" class="btn {% if request.GET.status == 'resolved' %}btn-primary{% else %}btn-outline-primary{% endif %}">Resolved</a>
@@ -54,7 +54,7 @@
                 <i class="bi bi-person me-1 text-secondary"></i>{{ issue.user.username }}
               </td>
               <td class="text-center">
-                <a href="{% url 'resolve_issue' issue.id %}" class="btn btn-outline-primary btn-sm">
+                <a href="{% url 'admin_panel:resolve_issue' issue.id %}" class="btn btn-outline-primary btn-sm">
                   <i class="bi bi-pencil-square me-1"></i>View / Update
                 </a>
               </td>

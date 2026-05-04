@@ -41,7 +41,7 @@
       <h1 class="h2 mb-0">Welcome to {{ department_display_name}} Department</h1>
       <p class="text-muted mb-0">Live overview of citizen-reported issues for Gwalior.</p>
     </div>
-    <a href="{% url 'my_map_view' %}" class="btn btn-lg btn-outline-primary d-none d-md-inline-flex">
+    <a href="{% url 'admin_panel:my_map_view' %}" class="btn btn-lg btn-outline-primary d-none d-md-inline-flex">
       <i class="bi bi-map me-2"></i>View Issues on Map
     </a>
   </div>
@@ -163,7 +163,7 @@
               </td>
               <td>{{ issue.created_at|date:"d M Y, P" }}</td>
               <td>
-                <a href="{% url 'resolve_issue' issue.id %}" class="btn btn-primary btn-sm">
+                <a href="{% url 'admin_panel:resolve_issue' issue.id %}" class="btn btn-primary btn-sm">
                   <i class="bi bi-pencil-square me-1"></i>View / Update
                 </a>
               </td>

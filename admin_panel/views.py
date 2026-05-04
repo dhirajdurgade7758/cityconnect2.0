@@ -138,7 +138,7 @@ class MapView(View):
                 'description': a.description,
                 'status':a.status,
                 'url': reverse('feed'),
-                'resolve_url': reverse('resolve_issue', args=[a.id]),
+                'resolve_url': reverse('admin_panel:resolve_issue', args=[a.id]),
                 'department':a.department,
             }
             locations.append(data)
